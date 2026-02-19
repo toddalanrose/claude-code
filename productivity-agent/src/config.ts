@@ -28,4 +28,7 @@ export const config = {
 
   // Timezone for display purposes
   timezone: optionalEnv("TIMEZONE", "America/New_York"),
+
+  // Mini App URL (Telegram WebApp)
+  miniAppUrl: process.env["MINI_APP_URL"] ?? "",
 } as const;

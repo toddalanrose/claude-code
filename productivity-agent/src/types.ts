@@ -56,7 +56,8 @@ export interface TelegramCallbackQuery {
 // Inline keyboard types
 export interface InlineKeyboardButton {
   text: string;
-  callback_data: string;
+  callback_data?: string;
+  web_app?: { url: string };
 }
 
 export interface InlineKeyboardMarkup {

@@ -1,18 +1,23 @@
+import { config } from "../config.js";
 import type { InlineKeyboardMarkup } from "../types.js";
 
 export function analysisKeyboard(): InlineKeyboardMarkup {
-  return {
-    inline_keyboard: [
-      [
-        { text: "Tell me more", callback_data: "elaborate" },
-        { text: "Show runner-up", callback_data: "runner_up" },
-      ],
-      [
-        { text: "I disagree", callback_data: "disagree" },
-        { text: "🔄 Refresh", callback_data: "refresh" },
-      ],
+  const rows = [
+    [
+      { text: "Tell me more", callback_data: "elaborate" },
+      { text: "Show runner-up", callback_data: "runner_up" },
     ],
-  };
+    [
+      { text: "I disagree", callback_data: "disagree" },
+      { text: "🔄 Refresh", callback_data: "refresh" },
+    ],
+  ];
+
+  if (config.miniAppUrl) {
+    rows.push([{ text: "📊 Open Dashboard", web_app: { url: config.miniAppUrl } }]);
+  }
+
+  return { inline_keyboard: rows };
 }
 
 export function disagreeKeyboard(): InlineKeyboardMarkup {
