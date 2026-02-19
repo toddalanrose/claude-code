@@ -1,4 +1,6 @@
 {
+  "buildCommand": "tsc --noEmit",
+  "outputDirectory": ".",
   "crons": [
     {
       "path": "/api/cron/morning",
