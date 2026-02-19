@@ -1,48 +1,59 @@
-import { kv } from "@vercel/kv";
+import { ConvexHttpClient } from "convex/browser";
+import { api } from "../../convex/_generated/api.js";
+import { config } from "../config.js";
 import type { DailyConversation, NormalizedIssue, ConversationMessage } from "../types.js";
 
-const TTL_SECONDS = 7 * 24 * 60 * 60; // 7 days
+const client = new ConvexHttpClient(config.convexUrl);
 
-function todayKey(): string {
-  return `conversation:${new Date().toISOString().split("T")[0]}`;
+function todayDate(): string {
+  return new Date().toISOString().split("T")[0] as string;
 }
 
 export async function getToday(): Promise<DailyConversation | null> {
-  return kv.get<DailyConversation>(todayKey());
+  const doc = await client.query(api.conversations.getByDate, {
+    date: todayDate(),
+  });
+  if (!doc) return null;
+  return {
+    date: doc.date,
+    issues: doc.issues,
+    messages: doc.messages,
+    createdAt: doc.createdAt,
+  };
 }
 
 export async function startNewDay(
   issues: NormalizedIssue[],
   analysisText: string
 ): Promise<void> {
-  const conversation: DailyConversation = {
-    date: new Date().toISOString().split("T")[0] as string,
+  await client.mutation(api.conversations.startNewDay, {
+    date: todayDate(),
     issues,
     messages: [
       {
-        role: "assistant",
+        role: "assistant" as const,
         content: analysisText,
         timestamp: Date.now(),
       },
     ],
     createdAt: Date.now(),
-  };
-  await kv.set(todayKey(), conversation, { ex: TTL_SECONDS });
+  });
 }
 
 export async function addMessage(
   role: "user" | "assistant",
   content: string
 ): Promise<void> {
-  const conversation = await getToday();
-  if (!conversation) return;
-
-  conversation.messages.push({ role, content, timestamp: Date.now() });
-  await kv.set(todayKey(), conversation, { ex: TTL_SECONDS });
+  await client.mutation(api.conversations.addMessage, {
+    date: todayDate(),
+    message: { role, content, timestamp: Date.now() },
+  });
 }
 
 export async function resetToday(): Promise<void> {
-  await kv.del(todayKey());
+  await client.mutation(api.conversations.deleteByDate, {
+    date: todayDate(),
+  });
 }
 
 export async function getMessages(): Promise<ConversationMessage[]> {

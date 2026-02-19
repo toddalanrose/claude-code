@@ -23,7 +23,7 @@ export interface ConversationMessage {
   timestamp: number;
 }
 
-// Full conversation state for one day, stored in Vercel KV
+// Full conversation state for one day, stored in Convex
 export interface DailyConversation {
   date: string;                      // YYYY-MM-DD
   issues: NormalizedIssue[];         // Issues fetched that morning

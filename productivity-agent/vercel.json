@@ -1,5 +1,5 @@
 {
-  "buildCommand": "tsc --noEmit",
+  "buildCommand": "npx convex codegen && tsc --noEmit",
   "outputDirectory": ".",
   "crons": [
     {

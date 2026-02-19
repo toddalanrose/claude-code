@@ -9,6 +9,9 @@ function optionalEnv(key: string, defaultValue: string): string {
 }
 
 export const config = {
+  // Convex
+  convexUrl: requireEnv("CONVEX_URL"),
+
   // Linear
   linearApiKey: requireEnv("LINEAR_API_KEY"),
 
